@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "noc-ai-operator"
-version = "0.1.0"
+version = "0.1.1"
 description = "AI-driven NOC operator replacement for automated infrastructure monitoring and remediation"
 readme = "README.md"
 license = {text = "MIT"}
@@ -59,6 +59,9 @@ dependencies = [
 
     # Dashboard
     "jinja2>=3.1.0",
+
+    # File uploads
+    "python-multipart>=0.0.6",
 ]
 
 [project.optional-dependencies]
