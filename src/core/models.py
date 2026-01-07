@@ -72,6 +72,7 @@ class AIAnalysis(BaseModel):
     confidence: float = Field(ge=0.0, le=1.0)
     reasoning: str
     requires_approval: bool = False
+    runbook_id: str | None = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 
