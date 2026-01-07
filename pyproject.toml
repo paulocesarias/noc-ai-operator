@@ -76,8 +76,12 @@ rag = [
     # Embeddings
     "sentence-transformers>=2.2.0",
 ]
+slack = [
+    # Slack integration
+    "slack-sdk>=3.21.0",
+]
 all = [
-    "noc-ai-operator[dev,rag]",
+    "noc-ai-operator[dev,rag,slack]",
 ]
 
 [project.scripts]
