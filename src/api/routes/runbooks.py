@@ -3,15 +3,15 @@
 from typing import Any
 
 import structlog
-from fastapi import APIRouter, HTTPException, Query, UploadFile, File
+from fastapi import APIRouter, File, HTTPException, Query, UploadFile
 from pydantic import BaseModel, Field
 
 from src.ai.rag import (
+    CHROMADB_AVAILABLE,
+    EMBEDDINGS_AVAILABLE,
     RunbookEntry,
     SearchResult,
     get_knowledge_base,
-    CHROMADB_AVAILABLE,
-    EMBEDDINGS_AVAILABLE,
 )
 
 logger = structlog.get_logger()
@@ -270,8 +270,6 @@ async def list_tags() -> list[str]:
 async def import_runbooks(file: UploadFile = File(...)) -> dict[str, int]:
     """Import runbooks from a JSON file."""
     import json
-    import tempfile
-    from pathlib import Path
 
     if not file.filename or not file.filename.endswith(".json"):
         raise HTTPException(status_code=400, detail="File must be a JSON file")

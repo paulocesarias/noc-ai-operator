@@ -1,15 +1,12 @@
 """API routes for approval workflows."""
 
-from typing import Any
 
 import structlog
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from src.workflows.approval import (
     ApprovalRequest,
-    ApprovalResponse,
-    ApprovalStatus,
     get_approval_service,
 )
 

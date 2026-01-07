@@ -19,7 +19,6 @@ from pysnmp.hlapi import (
     nextCmd,
 )
 
-from src.core.config import settings
 from src.core.event_processor import get_event_processor
 from src.core.models import Event, EventSeverity, EventSource
 
@@ -340,8 +339,8 @@ class SNMPMonitor:
 
     async def _poll_and_check(self, device: SNMPDevice) -> None:
         """Poll device and check thresholds."""
-        # Get system info
-        system_info = await self.poller.get_system_info(device.host, device.port)
+        # Get system info (for future use)
+        _ = await self.poller.get_system_info(device.host, device.port)
 
         # Get interface stats
         interfaces = await self.poller.get_interface_stats(device.host, device.port)

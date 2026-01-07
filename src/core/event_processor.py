@@ -161,7 +161,7 @@ class EventProcessor:
             try:
                 event = await asyncio.wait_for(self._queue.get(), timeout=1.0)
                 await self._process_event(event)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 continue
             except Exception as e:
                 logger.error("Error in processing loop", error=str(e))

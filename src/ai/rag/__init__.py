@@ -1,8 +1,8 @@
 """RAG (Retrieval Augmented Generation) for runbook knowledge base."""
 
 from src.ai.rag.knowledge_base import (
-    DEFAULT_RUNBOOKS,
     CHROMADB_AVAILABLE,
+    DEFAULT_RUNBOOKS,
     EMBEDDINGS_AVAILABLE,
     KnowledgeBase,
     RunbookEntry,

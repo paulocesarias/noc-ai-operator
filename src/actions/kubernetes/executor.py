@@ -7,7 +7,6 @@ from typing import Any
 
 import structlog
 from kubernetes import client, config
-from kubernetes.client.rest import ApiException
 
 from src.core.config import settings
 from src.core.models import ActionType, RemediationAction

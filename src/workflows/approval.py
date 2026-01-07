@@ -1,16 +1,17 @@
 """Approval workflow service for remediation actions."""
 
 import asyncio
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Awaitable
+from typing import Any
 from uuid import uuid4
 
 import structlog
 
 from src.core.config import settings
-from src.core.models import ActionStatus, ActionType, AIAnalysis, Event, RemediationAction
+from src.core.models import ActionType, AIAnalysis, Event, RemediationAction
 
 logger = structlog.get_logger()
 

@@ -9,7 +9,7 @@ from typing import Any
 import anthropic
 import structlog
 
-from src.ai.rag import get_knowledge_base, RunbookEntry
+from src.ai.rag import RunbookEntry, get_knowledge_base
 from src.core.config import settings
 from src.core.models import ActionType, AIAnalysis, Event
 

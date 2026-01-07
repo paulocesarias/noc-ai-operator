@@ -9,8 +9,6 @@ import structlog
 from pysnmp.carrier.asyncio.dgram import udp
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
-from pysnmp.proto.api import v2c
-from pysnmp.smi import builder, view
 
 from src.core.config import settings
 from src.core.event_processor import get_event_processor

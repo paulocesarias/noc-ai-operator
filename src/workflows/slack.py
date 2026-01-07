@@ -13,7 +13,7 @@ logger = structlog.get_logger()
 # Optional Slack SDK import
 try:
     from slack_sdk import WebClient
-    from slack_sdk.errors import SlackApiError
+    from slack_sdk.errors import SlackApiError  # noqa: F401
 
     SLACK_AVAILABLE = True
 except ImportError:
@@ -123,7 +123,6 @@ class SlackNotifier:
         if not self.is_available:
             return None
 
-        color = "#36a64f" if success else "#ff0000"
         status_emoji = ":white_check_mark:" if success else ":x:"
 
         blocks = [
@@ -193,12 +192,6 @@ class SlackNotifier:
         if not self.is_available:
             return None
 
-        severity_colors = {
-            "critical": "#ff0000",
-            "warning": "#ffcc00",
-            "info": "#36a64f",
-        }
-        color = severity_colors.get(event.severity.value, "#808080")
         severity_emoji = {
             "critical": ":rotating_light:",
             "warning": ":warning:",

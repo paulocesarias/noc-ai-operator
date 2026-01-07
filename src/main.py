@@ -8,7 +8,6 @@ import uvicorn
 
 from src.actions.kubernetes.executor import K8sExecutor
 from src.adapters.ssh.executor import SSHActionHandler
-from src.adapters.syslog.receiver import SyslogReceiver
 from src.api.app import create_app
 from src.core.config import settings
 from src.core.event_processor import get_event_processor

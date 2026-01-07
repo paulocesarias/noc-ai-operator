@@ -9,7 +9,7 @@ from typing import Any
 import paramiko
 import structlog
 
-from src.core.models import ActionType, RemediationAction
+from src.core.models import RemediationAction
 
 logger = structlog.get_logger()
 
