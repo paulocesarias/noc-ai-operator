@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Event {{ event.id[:8] }} - NOC AI Operator{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Back link -->
+    <a href="/dashboard" class="inline-flex items-center text-sm text-gray-400 hover:text-white">
+        <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Back to Dashboard
+    </a>
+
+    {% if event %}
+    <!-- Event Header -->
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="flex items-start justify-between">
+            <div>
+                <div class="flex items-center space-x-3">
+                    {% if event.severity.value == 'critical' %}
+                    <span class="px-3 py-1 rounded-full text-sm font-medium bg-red-900 text-red-300">Critical</span>
+                    {% elif event.severity.value == 'warning' %}
+                    <span class="px-3 py-1 rounded-full text-sm font-medium bg-yellow-900 text-yellow-300">Warning</span>
+                    {% else %}
+                    <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-900 text-blue-300">Info</span>
+                    {% endif %}
+                    <span class="text-sm text-gray-500">{{ event.source.value }}</span>
+                </div>
+                <h1 class="text-2xl font-bold text-white mt-2">{{ event.title }}</h1>
+                <p class="text-gray-400 mt-1">{{ event.description }}</p>
+            </div>
+            <div class="text-right text-sm text-gray-500">
+                <p>ID: {{ event.id[:8] }}...</p>
+                <p>{{ event.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            </div>
+        </div>
+
+        <!-- Labels -->
+        {% if event.labels %}
+        <div class="mt-4 pt-4 border-t border-gray-700">
+            <h3 class="text-sm font-medium text-gray-400 mb-2">Labels</h3>
+            <div class="flex flex-wrap gap-2">
+                {% for key, value in event.labels.items() %}
+                <span class="inline-flex items-center px-2 py-1 rounded text-xs bg-gray-700 text-gray-300">
+                    <span class="font-medium">{{ key }}:</span>
+                    <span class="ml-1">{{ value }}</span>
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- AI Analysis -->
+    {% if analysis %}
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+        <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+            AI Analysis
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="text-sm font-medium text-gray-400">Summary</h3>
+                <p class="mt-1 text-gray-200">{{ analysis.summary }}</p>
+            </div>
+
+            {% if analysis.root_cause %}
+            <div>
+                <h3 class="text-sm font-medium text-gray-400">Root Cause</h3>
+                <p class="mt-1 text-gray-200">{{ analysis.root_cause }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-gray-700 rounded-lg p-4">
+                <h3 class="text-sm font-medium text-gray-400">Confidence</h3>
+                <div class="mt-2 flex items-center">
+                    <div class="flex-1 bg-gray-600 rounded-full h-2">
+                        <div class="bg-purple-500 h-2 rounded-full" style="width: {{ (analysis.confidence * 100) | round | int }}%"></div>
+                    </div>
+                    <span class="ml-3 text-white font-medium">{{ (analysis.confidence * 100) | round | int }}%</span>
+                </div>
+            </div>
+
+            <div class="bg-gray-700 rounded-lg p-4">
+                <h3 class="text-sm font-medium text-gray-400">Suggested Actions</h3>
+                <div class="mt-2 flex flex-wrap gap-1">
+                    {% for action in analysis.suggested_actions %}
+                    <span class="px-2 py-1 rounded text-xs bg-purple-900 text-purple-300">{{ action }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="bg-gray-700 rounded-lg p-4">
+                <h3 class="text-sm font-medium text-gray-400">Approval Required</h3>
+                <p class="mt-2 text-white font-medium">
+                    {% if analysis.requires_approval %}
+                    <span class="text-yellow-400">Yes</span>
+                    {% else %}
+                    <span class="text-green-400">No (Auto-remediate)</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        {% if analysis.reasoning %}
+        <div class="mt-4 pt-4 border-t border-gray-700">
+            <h3 class="text-sm font-medium text-gray-400">Reasoning</h3>
+            <p class="mt-1 text-gray-300 text-sm">{{ analysis.reasoning }}</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Related Actions -->
+    {% if actions %}
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+        <h2 class="text-lg font-semibold text-white mb-4">Related Actions</h2>
+        <div class="space-y-3">
+            {% for action in actions %}
+            <a href="/dashboard/actions/{{ action.id }}" class="block p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        {% if action.status.value == 'success' %}
+                        <svg class="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        {% elif action.status.value == 'failed' %}
+                        <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        {% elif action.status.value == 'pending' %}
+                        <svg class="w-5 h-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        {% else %}
+                        <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        {% endif %}
+                        <span class="text-gray-200">{{ action.action_type.value | replace('_', ' ') | title }}</span>
+                    </div>
+                    <span class="px-2 py-1 rounded text-xs font-medium
+                        {% if action.status.value == 'success' %}bg-green-900 text-green-300
+                        {% elif action.status.value == 'failed' %}bg-red-900 text-red-300
+                        {% elif action.status.value == 'pending' %}bg-yellow-900 text-yellow-300
+                        {% else %}bg-blue-900 text-blue-300{% endif %}">
+                        {{ action.status.value }}
+                    </span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6 text-center">
+        <p class="text-gray-400">Event not found</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

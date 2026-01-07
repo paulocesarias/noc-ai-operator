@@ -1,0 +1,57 @@
+{% for action in actions %}
+<a href="/dashboard/actions/{{ action.id }}" class="block px-4 py-3 hover:bg-gray-700 transition-colors">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            {% if action.status.value == 'success' %}
+            <span class="flex-shrink-0">
+                <svg class="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </span>
+            {% elif action.status.value == 'failed' %}
+            <span class="flex-shrink-0">
+                <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </span>
+            {% elif action.status.value == 'pending' %}
+            <span class="flex-shrink-0">
+                <svg class="w-5 h-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </span>
+            {% elif action.status.value == 'executing' %}
+            <span class="flex-shrink-0">
+                <svg class="w-5 h-5 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+            </span>
+            {% else %}
+            <span class="flex-shrink-0 w-5 h-5 rounded-full bg-gray-600"></span>
+            {% endif %}
+            <div>
+                <p class="text-sm font-medium text-gray-200">{{ action.action_type.value | replace('_', ' ') | title }}</p>
+                <p class="text-xs text-gray-500">Confidence: {{ (action.confidence * 100) | round | int }}%</p>
+            </div>
+        </div>
+        <div class="text-right">
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
+                {% if action.status.value == 'success' %}bg-green-900 text-green-300
+                {% elif action.status.value == 'failed' %}bg-red-900 text-red-300
+                {% elif action.status.value == 'pending' %}bg-yellow-900 text-yellow-300
+                {% elif action.status.value == 'executing' %}bg-blue-900 text-blue-300
+                {% else %}bg-gray-700 text-gray-300{% endif %}">
+                {{ action.status.value }}
+            </span>
+            <p class="text-xs text-gray-500 mt-1">
+                {{ action.created_at.strftime('%H:%M:%S') }}
+            </p>
+        </div>
+    </div>
+</a>
+{% else %}
+<div class="px-4 py-8 text-center text-gray-500">
+    <p>No actions yet</p>
+    <p class="text-xs mt-1">Actions will appear when events are analyzed</p>
+</div>
+{% endfor %}

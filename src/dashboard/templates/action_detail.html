@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Action {{ action.id[:8] }} - NOC AI Operator{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Back link -->
+    <a href="/dashboard" class="inline-flex items-center text-sm text-gray-400 hover:text-white">
+        <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Back to Dashboard
+    </a>
+
+    {% if action %}
+    <!-- Action Header -->
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="flex items-start justify-between">
+            <div>
+                <div class="flex items-center space-x-3">
+                    <span class="px-3 py-1 rounded-full text-sm font-medium
+                        {% if action.status.value == 'success' %}bg-green-900 text-green-300
+                        {% elif action.status.value == 'failed' %}bg-red-900 text-red-300
+                        {% elif action.status.value == 'pending' %}bg-yellow-900 text-yellow-300
+                        {% elif action.status.value == 'executing' %}bg-blue-900 text-blue-300
+                        {% else %}bg-gray-700 text-gray-300{% endif %}">
+                        {{ action.status.value | title }}
+                    </span>
+                </div>
+                <h1 class="text-2xl font-bold text-white mt-2">{{ action.action_type.value | replace('_', ' ') | title }}</h1>
+            </div>
+            <div class="text-right text-sm text-gray-500">
+                <p>ID: {{ action.id[:8] }}...</p>
+                <p>Created: {{ action.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                {% if action.executed_at %}
+                <p>Executed: {{ action.executed_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Confidence -->
+        <div class="mt-4 pt-4 border-t border-gray-700">
+            <h3 class="text-sm font-medium text-gray-400 mb-2">AI Confidence</h3>
+            <div class="flex items-center">
+                <div class="flex-1 bg-gray-600 rounded-full h-3 max-w-xs">
+                    <div class="h-3 rounded-full
+                        {% if action.confidence >= 0.8 %}bg-green-500
+                        {% elif action.confidence >= 0.5 %}bg-yellow-500
+                        {% else %}bg-red-500{% endif %}"
+                        style="width: {{ (action.confidence * 100) | round | int }}%"></div>
+                </div>
+                <span class="ml-3 text-white font-medium">{{ (action.confidence * 100) | round | int }}%</span>
+            </div>
+        </div>
+
+        <!-- Approval Buttons (if pending) -->
+        {% if action.status.value == 'pending' %}
+        <div class="mt-4 pt-4 border-t border-gray-700">
+            <h3 class="text-sm font-medium text-gray-400 mb-3">Action Required</h3>
+            <div class="flex space-x-4">
+                <button
+                    hx-post="/api/v1/actions/{{ action.id }}/approve"
+                    hx-swap="none"
+                    hx-on::after-request="window.location.reload()"
+                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                    Approve Action
+                </button>
+                <button
+                    hx-post="/api/v1/actions/{{ action.id }}/reject"
+                    hx-swap="none"
+                    hx-on::after-request="window.location.reload()"
+                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">
+                    Reject Action
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Parameters -->
+    {% if action.parameters %}
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+        <h2 class="text-lg font-semibold text-white mb-4">Parameters</h2>
+        <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+            <pre class="text-sm text-gray-300">{{ action.parameters | tojson(indent=2) }}</pre>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Result -->
+    {% if action.result %}
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+        <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Result
+        </h2>
+        <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+            <pre class="text-sm text-gray-300">{{ action.result | tojson(indent=2) }}</pre>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Error -->
+    {% if action.error %}
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+        <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Error
+        </h2>
+        <div class="bg-red-900/30 border border-red-700 rounded-lg p-4">
+            <p class="text-red-300">{{ action.error }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Related Event -->
+    {% if event %}
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+        <h2 class="text-lg font-semibold text-white mb-4">Related Event</h2>
+        <a href="/dashboard/events/{{ event.id }}" class="block p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    {% if event.severity.value == 'critical' %}
+                    <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                    {% elif event.severity.value == 'warning' %}
+                    <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+                    {% else %}
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    {% endif %}
+                    <div>
+                        <p class="text-gray-200">{{ event.title }}</p>
+                        <p class="text-xs text-gray-500">{{ event.source.value }}</p>
+                    </div>
+                </div>
+                <span class="text-xs text-gray-500">{{ event.timestamp.strftime('%H:%M:%S') }}</span>
+            </div>
+        </a>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6 text-center">
+        <p class="text-gray-400">Action not found</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

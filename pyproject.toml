@@ -56,6 +56,9 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "pyyaml>=6.0.0",
     "tenacity>=8.2.0",
+
+    # Dashboard
+    "jinja2>=3.1.0",
 ]
 
 [project.optional-dependencies]

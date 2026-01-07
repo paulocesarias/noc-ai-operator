@@ -1,0 +1,27 @@
+{% for event in events %}
+<a href="/dashboard/events/{{ event.id }}" class="block px-4 py-3 hover:bg-gray-700 transition-colors">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            {% if event.severity.value == 'critical' %}
+            <span class="flex-shrink-0 w-2 h-2 rounded-full bg-red-500"></span>
+            {% elif event.severity.value == 'warning' %}
+            <span class="flex-shrink-0 w-2 h-2 rounded-full bg-yellow-500"></span>
+            {% else %}
+            <span class="flex-shrink-0 w-2 h-2 rounded-full bg-blue-500"></span>
+            {% endif %}
+            <div>
+                <p class="text-sm font-medium text-gray-200 truncate max-w-xs">{{ event.title }}</p>
+                <p class="text-xs text-gray-500">{{ event.source.value }}</p>
+            </div>
+        </div>
+        <div class="text-xs text-gray-500">
+            {{ event.timestamp.strftime('%H:%M:%S') }}
+        </div>
+    </div>
+</a>
+{% else %}
+<div class="px-4 py-8 text-center text-gray-500">
+    <p>No events yet</p>
+    <p class="text-xs mt-1">Events will appear here when alerts are received</p>
+</div>
+{% endfor %}
