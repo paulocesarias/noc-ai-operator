@@ -1,0 +1,63 @@
+# NOC AI Operator Configuration
+
+# API Server
+api:
+  host: 0.0.0.0
+  port: 8000
+
+# Database
+database:
+  url: postgresql+asyncpg://localhost:5432/noc_ai
+
+# Redis (event queue)
+redis:
+  url: redis://localhost:6379
+
+# Claude AI
+ai:
+  anthropic_api_key: ${ANTHROPIC_API_KEY}
+  model: claude-sonnet-4-20250514
+  max_tokens: 4096
+  # Confidence threshold for auto-remediation (below this requires approval)
+  auto_remediate_threshold: 0.8
+
+# Kubernetes
+kubernetes:
+  kubeconfig_path: null  # Use in-cluster config if null
+  default_namespace: default
+
+# AlertManager Integration
+alertmanager:
+  url: http://localhost:9093
+  webhook_path: /webhook/alertmanager
+
+# Syslog Receiver
+syslog:
+  enabled: true
+  port: 514
+  protocol: udp  # udp or tcp
+
+# SNMP
+snmp:
+  enabled: true
+  trap_port: 162
+  community: public
+  version: 2
+
+# Approval Workflow
+approval:
+  enabled: true
+  # Actions that always require approval
+  always_require:
+    - k8s_rollback
+    - ansible_playbook
+  # Slack integration for approvals
+  slack:
+    enabled: true
+    webhook_url: ${SLACK_WEBHOOK_URL}
+    channel: "#noc-alerts"
+
+# Logging
+logging:
+  level: INFO
+  format: json  # json or text
